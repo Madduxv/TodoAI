@@ -1,20 +1,38 @@
 package com.TodoAI.agent.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
-
+@Entity
+@Table(name = "tasks")
 public class Task {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private UUID id;
 
   private String description;
   private String source;
   private Integer priority;
+
+  @Enumerated(EnumType.STRING)
   private Status currentStatus;
   private LocalDateTime dueDate;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id") // foreign key
+  private User user;
 
   public enum Status {
     PENDING,
@@ -25,7 +43,6 @@ public class Task {
 
   // --- Constructors ---
   public Task() {
-
   }
 
   public Task(String description, String source, Integer priority, LocalDateTime dueDate) {
