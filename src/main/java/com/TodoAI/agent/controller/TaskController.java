@@ -2,11 +2,14 @@ package com.TodoAI.agent.controller;
 
 import com.TodoAI.agent.service.*;
 import com.TodoAI.agent.model.*;
+import com.TodoAI.agent.repository.*;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +22,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class TaskController {
 
   @Autowired
-  private TaskService ts;
+  private TaskService taskService;
+
+  @Autowired
+  private TaskRepository taskRepository;
+
+  @Autowired
+  private UserRepository userRepository;
 
   /*
    * Example useage:
-   * curl -X POST http://localhost:8080/task/new \
+   * curl -u testUser:testPass -X POST http://localhost:8080/task/new \
    * -H "Content-Type: application/json" \
    * -d '{
    * "description": "Finish AI agent",
@@ -32,47 +41,51 @@ public class TaskController {
    * }'
    */
   @PostMapping("/new")
-  public ResponseEntity<Task> newTask(@RequestBody Task task) {
-    task.setSource("manual");
-    task.setCurrentStatus(Task.Status.PENDING);
-    ts.addNewTask(task);
-    return ResponseEntity.ok(task);
+  public ResponseEntity<String> newTask(@RequestBody Task task, @AuthenticationPrincipal UserDetails userDetails) {
+    User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+    task.setUser(user);
+    taskRepository.save(task);
+    return ResponseEntity.ok("Added task:\n" + task.getDescription() + "\nfor user: " + user.getUsername());
   }
 
   /*
    * Example useage:
-   * curl -X GET http://localhost:8080/task/get/all
+   * curl -u testUser:testPass -X GET http://localhost:8080/task/get/all
    */
   @GetMapping("/get/all")
-  public ResponseEntity<List<Task>> getCurrentTasks() {
-    return ResponseEntity.ok(ts.getAllTasks());
+  public ResponseEntity<List<Task>> getCurrentTasks(@AuthenticationPrincipal UserDetails userDetails) {
+    User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+    return ResponseEntity.ok(taskService.getAllTasks(user));
   }
 
   /*
    * Example useage:
-   * curl -X GET http://localhost:8080/task/get/completed
+   * curl -u testUser:testPass -X GET http://localhost:8080/task/get/completed
    */
   @GetMapping("/get/completed")
-  public ResponseEntity<List<Task>> getCompletedTasks() {
-    return ResponseEntity.ok(ts.getCompletedTasks());
+  public ResponseEntity<List<Task>> getCompletedTasks(@AuthenticationPrincipal UserDetails userDetails) {
+    User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+    return ResponseEntity.ok(taskService.getCompletedTasks(user));
   }
 
   /*
    * Example useage:
-   * curl -X GET http://localhost:8080/task/get/pending
+   * curl -u testUser:testPass -X GET http://localhost:8080/task/get/pending
    */
   @GetMapping("/get/pending")
-  public ResponseEntity<List<Task>> getPendingTasks() {
-    return ResponseEntity.ok(ts.getPendingTasks());
+  public ResponseEntity<List<Task>> getPendingTasks(@AuthenticationPrincipal UserDetails userDetails) {
+    User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+    return ResponseEntity.ok(taskService.getPendingTasks(user));
   }
 
   /*
    * Example useage:
-   * curl -X DELETE http://localhost:8080/task/get/all
+   * curl -u testUser:testPass -X DELETE http://localhost:8080/task/delete/all
    */
   @DeleteMapping("delete/all")
-  public ResponseEntity<String> deleteAll() {
-    ts.deleteAllTasks();
+  public ResponseEntity<String> deleteAll(@AuthenticationPrincipal UserDetails userDetails) {
+    User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+    taskService.deleteAllUserTasks(user);
     return ResponseEntity.ok("DB Cleared");
   }
 }

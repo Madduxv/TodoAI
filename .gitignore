@@ -6,6 +6,7 @@ target/
 
 ### CUSTOM ###
 todoai.db
+SecurityContext.db
 
 ### STS ###
 .apt_generated

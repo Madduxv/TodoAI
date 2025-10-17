@@ -31,7 +31,7 @@ public class Task {
   private LocalDateTime dueDate;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id") // foreign key
+  @JoinColumn(name = "user_id")
   private User user;
 
   public enum Status {
@@ -51,6 +51,14 @@ public class Task {
     this.priority = priority;
     this.dueDate = dueDate;
     this.currentStatus = Status.PENDING;
+  }
+
+  public User getUser() {
+    return this.user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 
   public UUID getId() {
