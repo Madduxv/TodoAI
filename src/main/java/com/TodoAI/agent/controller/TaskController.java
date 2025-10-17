@@ -44,8 +44,10 @@ public class TaskController {
   public ResponseEntity<String> newTask(@RequestBody Task task, @AuthenticationPrincipal UserDetails userDetails) {
     User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
     task.setUser(user);
+    task.setSource("manual");
+    task.setCurrentStatus(Task.Status.PENDING);
     taskRepository.save(task);
-    return ResponseEntity.ok("Added task:\n" + task.getDescription() + "\nfor user: " + user.getUsername());
+    return ResponseEntity.ok("Added task:\n" + task.getDescription() + "\nfor user: " + user.getUsername() + "\n");
   }
 
   /*
@@ -82,10 +84,10 @@ public class TaskController {
    * Example useage:
    * curl -u testUser:testPass -X DELETE http://localhost:8080/task/delete/all
    */
-  @DeleteMapping("delete/all")
+  @DeleteMapping("/delete/all")
   public ResponseEntity<String> deleteAll(@AuthenticationPrincipal UserDetails userDetails) {
     User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
     taskService.deleteAllUserTasks(user);
-    return ResponseEntity.ok("DB Cleared");
+    return ResponseEntity.ok("Tasks Cleared");
   }
 }
