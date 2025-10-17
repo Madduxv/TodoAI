@@ -30,7 +30,8 @@ public class TaskService {
   }
 
   private void addToCalendar(Task taskToAdd, String response) throws SQLException {
-    System.out.println("Adding \"" + response + "\" to calendar for the user " + taskToAdd.getUser().getUsername());
+    System.out
+        .println("Adding \"" + response + "\" to calendar for the user " + taskToAdd.getUser().getUsername() + "\n");
     taskRepository.save(taskToAdd);
     // item to db -> db to user's calendar when requested
   }

@@ -46,7 +46,7 @@ public class TaskController {
     task.setUser(user);
     task.setSource("manual");
     task.setCurrentStatus(Task.Status.PENDING);
-    taskRepository.save(task);
+    taskService.addNewTask(task);
     return ResponseEntity.ok("Added task:\n" + task.getDescription() + "\nfor user: " + user.getUsername() + "\n");
   }
 
