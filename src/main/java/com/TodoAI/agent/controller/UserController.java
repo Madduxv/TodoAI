@@ -24,10 +24,23 @@ public class UserController {
   @Autowired
   private PasswordEncoder encoder;
 
+  /*
+   * Example usage:
+   * curl -X POST -H "Content-type: application/json" \
+   * -d '{"username": "testUser", "password": "testPassword"}' \
+   * http://localhost:8080/user/register
+   */
   @PostMapping("/register")
   public String register(@RequestBody User user) {
     user.setPassword(encoder.encode(user.getPassword()));
     userRepository.save(user);
-    return "User registered successfully!";
+    return "User registered successfully!\r\n";
   }
+
+  /*
+   * Login Example:
+   * curl -v -c cookies.txt -X POST \
+   * -d "username=testUser&password=testPassword" \
+   * http://localhost:8080/login
+   */
 }
