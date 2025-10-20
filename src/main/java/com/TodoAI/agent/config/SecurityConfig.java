@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,14 +27,23 @@ public class SecurityConfig {
     // .permitAll())
     // .logout(logout -> logout.permitAll());
 
+    // http
+    // .csrf(csrf -> csrf.disable())
+    // .authorizeHttpRequests(auth -> auth
+    // .requestMatchers("/login/**", "/user/register").permitAll()
+    // .anyRequest().authenticated())
+    // .httpBasic(Customizer.withDefaults()) // temporary: allows testing with curl
+    // .formLogin(form -> form.disable())
+    // .logout(logout -> logout.disable());
+
     http
-        .csrf(csrf -> csrf.disable())
+        .csrf(csrf -> csrf.disable()) // for API testing only, enable in prod
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login/**", "/user/register").permitAll()
+            .requestMatchers("/login", "/register").permitAll()
             .anyRequest().authenticated())
-        .httpBasic(Customizer.withDefaults()) // temporary: allows testing with curl
-        .formLogin(form -> form.disable())
-        .logout(logout -> logout.disable());
+        .formLogin(Customizer.withDefaults()) // enables /login endpoint
+        .logout(Customizer.withDefaults())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
     return http.build();
   }
 

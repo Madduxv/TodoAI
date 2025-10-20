@@ -39,8 +39,7 @@ public class UserController {
 
   /*
    * Login Example:
-   * curl -v -c cookies.txt -X POST \
-   * -d "username=testUser&password=testPassword" \
-   * http://localhost:8080/login
+   * curl -c cookies.txt -d "username=testUser&password=testPassword"
+   * http://localhost:8080/login -v
    */
 }
