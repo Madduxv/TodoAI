@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TodoAI - Tasks</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
+    input, button { margin: 5px; padding: 6px; }
+  </style>
+</head>
+<body>
+  <h2>Your Tasks</h2>
+  <div id="tasks"></div>
+
+  <input id="new-task" placeholder="New task description" />
+  <button onclick="addTask()">Add Task</button>
+  <button onclick="deleteAll()">Clear All</button>
+
+  <p id="status"></p>
+
+  <script src="tasks.js"></script>
+</body>
+</html>
