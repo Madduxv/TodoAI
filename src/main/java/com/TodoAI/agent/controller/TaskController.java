@@ -25,14 +25,12 @@ public class TaskController {
   private TaskService taskService;
 
   @Autowired
-  private TaskRepository taskRepository;
-
-  @Autowired
   private UserRepository userRepository;
 
   /*
    * Example useage:
-   * curl -u testUser:testPass -X POST http://localhost:8080/task/new \
+   * curl -b cookies.txt -X POST
+   * http://localhost:8080/task/new \
    * -H "Content-Type: application/json" \
    * -d '{
    * "description": "Finish AI agent",
@@ -52,7 +50,8 @@ public class TaskController {
 
   /*
    * Example useage:
-   * curl -u testUser:testPass -X GET http://localhost:8080/task/get/all
+   * curl -b cookies.txt -X GET
+   * http://localhost:8080/task/get/all | jq
    */
   @GetMapping("/get/all")
   public ResponseEntity<List<Task>> getCurrentTasks(@AuthenticationPrincipal UserDetails userDetails) {
@@ -62,7 +61,8 @@ public class TaskController {
 
   /*
    * Example useage:
-   * curl -u testUser:testPass -X GET http://localhost:8080/task/get/completed
+   * curl -b cookies.txt -X GET
+   * http://localhost:8080/task/get/completed | jq
    */
   @GetMapping("/get/completed")
   public ResponseEntity<List<Task>> getCompletedTasks(@AuthenticationPrincipal UserDetails userDetails) {
@@ -72,7 +72,8 @@ public class TaskController {
 
   /*
    * Example useage:
-   * curl -u testUser:testPass -X GET http://localhost:8080/task/get/pending
+   * curl -b cookies.txt -X GET
+   * http://localhost:8080/task/get/pending | jq
    */
   @GetMapping("/get/pending")
   public ResponseEntity<List<Task>> getPendingTasks(@AuthenticationPrincipal UserDetails userDetails) {
@@ -82,7 +83,8 @@ public class TaskController {
 
   /*
    * Example useage:
-   * curl -u testUser:testPass -X DELETE http://localhost:8080/task/delete/all
+   * curl -b cookies.txt -X DELETE
+   * http://localhost:8080/task/delete/all
    */
   @DeleteMapping("/delete/all")
   public ResponseEntity<String> deleteAll(@AuthenticationPrincipal UserDetails userDetails) {
