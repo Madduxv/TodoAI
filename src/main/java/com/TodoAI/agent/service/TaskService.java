@@ -3,8 +3,11 @@ package com.TodoAI.agent.service;
 import com.TodoAI.agent.model.Task;
 import com.TodoAI.agent.model.User;
 import com.TodoAI.agent.repository.TaskRepository;
+import com.TodoAI.agent.service.AgentService.ParsedTask;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +21,33 @@ public class TaskService {
 
   public void addNewTask(Task task) {
     try {
-      addToCalendar(task, sendPrompt(task.getDescription()));
-    } catch (SQLException e) {
-      System.out.println("Unable to add event to calendar: ");
+      String json = sendPrompt(task.getDescription());
+
+      ParsedTask parsed = new ObjectMapper().readValue(json, ParsedTask.class);
+
+      task.setDescription(parsed.summary());
+
+      if (parsed.dueDate() != null) {
+        task.setDueDate(LocalDateTime.parse(parsed.dueDate()));
+      }
+      System.out.println(task.getDescription() + " : " + task.getDueDate());
+
+      taskRepository.save(task);
+      addToCalendar(task, json);
+
+    } catch (Exception e) {
+      System.out.println("Unable to add event:");
       e.printStackTrace();
     }
   }
+
+  // try {
+  // addToCalendar(task, sendPrompt(task.getDescription()));
+  // } catch (SQLException e) {
+  // System.out.println("Unable to add event to calendar: ");
+  // e.printStackTrace();
+  // }
+  // }
 
   private String sendPrompt(String prompt) {
     return ("Response to " + prompt);
