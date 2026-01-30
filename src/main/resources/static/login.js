@@ -20,7 +20,7 @@ async function register() {
   const username = document.getElementById("register-username").value;
   const password = document.getElementById("register-password").value;
 
-  const res = await fetch("/login/register", {
+  const res = await fetch("/user/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
