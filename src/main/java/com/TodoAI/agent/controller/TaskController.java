@@ -92,4 +92,5 @@ public class TaskController {
     taskService.deleteAllUserTasks(user);
     return ResponseEntity.ok("Tasks Cleared");
   }
+
 }
