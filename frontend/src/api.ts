@@ -24,3 +24,21 @@ export async function apiFetch<T>(
 
   return res.json();
 }
+
+export async function register(username: string, password: string) {
+  const res = await fetch(`${BASE_URL}/user/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // safe even if not strictly needed yet
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Registration failed");
+  }
+
+  return res.text();
+}

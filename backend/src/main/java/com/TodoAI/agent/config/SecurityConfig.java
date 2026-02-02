@@ -1,14 +1,17 @@
 package com.TodoAI.agent.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+
 import com.TodoAI.agent.service.UserService;
 
 @Configuration
@@ -17,33 +20,32 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     // http
-    // .csrf(csrf -> csrf.disable()) // disable for development (use CSRF later)
+    // .csrf(csrf -> csrf.disable()) // for API testing only, enable in prod
     // .authorizeHttpRequests(auth -> auth
-    // .requestMatchers("/user/register", "/user/login").permitAll()
+    // .requestMatchers("/login", "/register").permitAll()
     // .anyRequest().authenticated())
-    // .formLogin(form -> form
-    // .loginProcessingUrl("/login/")
-    // .defaultSuccessUrl("/task/all", true)
-    // .permitAll())
-    // .logout(logout -> logout.permitAll());
-
-    // http
-    // .csrf(csrf -> csrf.disable())
-    // .authorizeHttpRequests(auth -> auth
-    // .requestMatchers("/login/**", "/user/register").permitAll()
-    // .anyRequest().authenticated())
-    // .httpBasic(Customizer.withDefaults()) // temporary: allows testing with curl
-    // .formLogin(form -> form.disable())
-    // .logout(logout -> logout.disable());
+    // .formLogin(Customizer.withDefaults()) // enables /login endpoint
+    // .logout(Customizer.withDefaults())
+    // .sessionManagement(session ->
+    // session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+    // return http.build();
 
     http
-        .csrf(csrf -> csrf.disable()) // for API testing only, enable in prod
+        .cors(cors -> cors.configurationSource(request -> {
+          CorsConfiguration config = new CorsConfiguration();
+          config.setAllowedOrigins(List.of("http://localhost:5173"));
+          config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+          config.setAllowedHeaders(List.of("*"));
+          config.setAllowCredentials(true);
+          return config;
+        }))
+        .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login", "/register").permitAll()
+            .requestMatchers("/login", "/user/register").permitAll()
             .anyRequest().authenticated())
-        .formLogin(Customizer.withDefaults()) // enables /login endpoint
-        .logout(Customizer.withDefaults())
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+        // .formLogin(form -> form.disable())
+        .httpBasic(Customizer.withDefaults());
+
     return http.build();
   }
 

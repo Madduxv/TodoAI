@@ -5,6 +5,7 @@ import com.TodoAI.agent.repository.UserRepository;
 import com.TodoAI.agent.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,10 +32,10 @@ public class UserController {
    * http://localhost:8080/user/register
    */
   @PostMapping("/register")
-  public String register(@RequestBody User user) {
+  public ResponseEntity<String> register(@RequestBody User user) {
     user.setPassword(encoder.encode(user.getPassword()));
     userRepository.save(user);
-    return "User registered successfully!\r\n";
+    return ResponseEntity.ok("User registered successfully!\r\n");
   }
 
   /*

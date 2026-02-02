@@ -1,6 +1,9 @@
 package com.TodoAI.agent.controller;
 
 import com.TodoAI.agent.service.*;
+
+import jakarta.servlet.http.HttpSession;
+
 import com.TodoAI.agent.model.*;
 import com.TodoAI.agent.repository.*;
 
@@ -54,10 +57,22 @@ public class TaskController {
    * http://localhost:8080/task/get/all | jq
    */
   @GetMapping("/get/all")
-  public ResponseEntity<List<Task>> getCurrentTasks(@AuthenticationPrincipal UserDetails userDetails) {
-    User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
-    return ResponseEntity.ok(taskService.getAllTasks(user));
+  public List<String> getAllTasks(HttpSession session) {
+    String user = (String) session.getAttribute("user");
+
+    if (user == null) {
+      throw new RuntimeException("Unauthorized");
+    }
+
+    return List.of("Task 1", "Task 2");
   }
+  // @GetMapping("/get/all")
+  // public ResponseEntity<List<Task>> getCurrentTasks(@AuthenticationPrincipal
+  // UserDetails userDetails) {
+  // User user =
+  // userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+  // return ResponseEntity.ok(taskService.getAllTasks(user));
+  // }
 
   /*
    * Example useage:
